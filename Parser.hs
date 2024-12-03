@@ -8,6 +8,7 @@ oneOf,
 integer,
 newline,
 whitespace,
+satisfy,
 Parser
 ) where
 

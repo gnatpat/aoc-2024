@@ -1,7 +1,6 @@
-import Parser
+import Parser ( Parser, integer, newline, runParser' )
 import Control.Applicative (Alternative (..))
-import Data.Either (fromRight)
-import Data.List
+import Data.List ( group, sort )
 import qualified Data.IntMap as Map
 
 parseInput :: Parser ([Int], [Int])
