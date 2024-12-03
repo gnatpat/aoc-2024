@@ -9,8 +9,8 @@ type Input = [Instruction]
 parser :: Parser Input
 parser = catMaybes <$> some (parseMul <|> parseDont <|> parseDo <|> anyChar)
   where parseMul = Just <$> (Mul <$> (string "mul(" *> integer <* char ',') <*> (integer <* string ")"))
-        parseDo = Just <$> (Do <$ string "do()")
         parseDont = Just <$> (Dont <$ string "don't()")
+        parseDo = Just <$> (Do <$ string "do()")
         anyChar = Nothing <$ satisfy (const True)
 
 part1 :: Input -> Int
@@ -20,10 +20,9 @@ part1 = sum . map onlyMul
 
 part2 :: Input -> Int
 part2 = snd . foldl' applyInstruction (True, 0)
-  where applyInstruction (_, total) Do = (True ,total)
-        applyInstruction (_, total) Dont = (False ,total)
-        applyInstruction (True, total) (Mul x y) = (True, total + x * y)
-        applyInstruction (False, total) (Mul x y) = (False, total)
+  where applyInstruction (_, total) Do = (True, total)
+        applyInstruction (_, total) Dont = (False, total)
+        applyInstruction (enabled, total) (Mul x y) = (enabled, total + (if enabled then x * y else 0))
 
 main :: IO ()
 main = print . ((,) <$> part1 <*> part2) . runParser' parser =<<getContents
