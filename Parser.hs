@@ -35,7 +35,7 @@ instance Monad Parser where
   Parser p >>= k = Parser $ \input -> do
     (output, rest) <- p input
     runParser (k output) rest
-      
+
 instance Alternative Parser where
   empty = Parser $ \_ -> Left [""]
 
@@ -55,11 +55,17 @@ satisfy predicate = Parser $ \input ->
       | predicate hd -> Right (hd, rest)
       | otherwise    -> Left ["Unxpected " ++ [hd]]
 
+whitespace :: Parser String
+whitespace = some $ oneOf [' ', '\t']
+
+lexeme :: Parser a -> Parser a
+lexeme p = p <* many (oneOf [' ', '\t'])
+
 char :: Char -> Parser Char
 char i = satisfy (== i)
 
 string :: String -> Parser String
-string = traverse char
+string = lexeme . traverse char
 
 eof :: Parser ()
 eof = Parser $ \input ->
@@ -74,10 +80,7 @@ numberChar :: Parser Char
 numberChar = oneOf ['0'..'9']
 
 integer :: Parser Int
-integer = read <$> some numberChar
-
-whitespace :: Parser String
-whitespace = some $ oneOf [' ', '\t']
+integer = read <$> lexeme (some numberChar)
 
 newline :: Parser Char
 newline = char '\n'
