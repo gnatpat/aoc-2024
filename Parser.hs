@@ -9,7 +9,8 @@ integer,
 newline,
 whitespace,
 satisfy,
-Parser
+Parser,
+anyChar
 ) where
 
 import Control.Applicative (Alternative (..))
@@ -55,6 +56,9 @@ satisfy predicate = Parser $ \input ->
     hd : rest
       | predicate hd -> Right (hd, rest)
       | otherwise    -> Left ["Unxpected " ++ [hd]]
+
+anyChar :: Parser Char
+anyChar = satisfy $ const True
 
 whitespace :: Parser String
 whitespace = some $ oneOf [' ', '\t']
